@@ -14,7 +14,11 @@ class ManForm(forms.ModelForm):
     def __init__(self,  *args, **kwargs):
         super(ManForm, self).__init__(*args, **kwargs)
         instance = kwargs.get('instance')
-        self.fields['persecuted'].initial = Man.objects.filter(id__in=instance.follow_ids.split(' '))
+        if instance.follow_ids:
+            self.fields['persecuted'].initial = Man.objects.filter(id__in=instance.follow_ids.split(' '))
+        else:
+            self.fields['persecuted'].initial = Man.objects.none()
+
         self.fields['pursued'].initial = Man.objects.filter(follow_ids__contains=instance.id)
 
     def save(self, commit=True):
@@ -58,11 +62,26 @@ class ManForm(forms.ModelForm):
 class ManAdmin(admin.ModelAdmin):
     form = ManForm
 
+    list_display = ('name', 'persecuted_count', 'pursued_count')
+
     fieldsets = (
         (None, {
             'fields': ('name', 'persecuted', 'pursued'),
         }),
     )
+
+    def persecuted_count(self, instance):
+        if instance.follow_ids == '':
+            return 0
+        return str(Man.objects.filter(id__in=instance.follow_ids.split(' ')).count())
+
+    persecuted_count.short_description = 'Count persecuted Man\'s'
+
+    def pursued_count(self, instance):
+        return Man.objects.filter(follow_ids__contains=instance.id).count()
+
+    pursued_count.short_description = 'Count pursued Man\'s'
+
 
 
 admin.site.register(Man, ManAdmin)
