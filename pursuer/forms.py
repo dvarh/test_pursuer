@@ -14,12 +14,13 @@ class ManForm(forms.ModelForm):
     def __init__(self,  *args, **kwargs):
         super(ManForm, self).__init__(*args, **kwargs)
         instance = kwargs.get('instance')
-        if instance.follow_ids:
-            self.fields['persecuted'].initial = Man.objects.filter(id__in=instance.follow_ids.split(' '))
-        else:
-            self.fields['persecuted'].initial = Man.objects.none()
+        if instance:
+            if instance.follow_ids:
+                self.fields['persecuted'].initial = Man.objects.filter(id__in=instance.follow_ids.split(' '))
+            else:
+                self.fields['persecuted'].initial = Man.objects.none()
 
-        self.fields['pursued'].initial = Man.objects.filter(follow_ids__contains=instance.id)
+            self.fields['pursued'].initial = Man.objects.filter(follow_ids__contains=instance.id)
 
     def save(self, commit=True):
         instance = super(ManForm, self).save(commit=False)
