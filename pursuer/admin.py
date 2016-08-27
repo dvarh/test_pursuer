@@ -33,7 +33,7 @@ class ManForm(forms.ModelForm):
             pursued = self.cleaned_data.get('pursued')
             current_pursued = Man.objects.filter(follow_ids__contains=instance.id)
 
-            excluded = current_pursued.exclude(pk__in = pursued)
+            excluded = current_pursued.exclude(pk__in=pursued)
             for e in excluded:
                 new_ids = [str(i) for i in e.follow_ids.split(' ') if i != str(instance.id)]
                 if new_ids:
@@ -42,8 +42,7 @@ class ManForm(forms.ModelForm):
                     e.follow_ids = ''
                 e.save()
 
-
-            added = pursued.exclude(pk__in = current_pursued)
+            added = pursued.exclude(pk__in=current_pursued)
             for a in added:
                 if a.follow_ids:
                     a.follow_ids = ' '.join(a.follow_ids.split(' ') + [str(instance.id)])
@@ -54,9 +53,6 @@ class ManForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
-
-
-
 
 
 class ManAdmin(admin.ModelAdmin):
@@ -81,7 +77,6 @@ class ManAdmin(admin.ModelAdmin):
         return Man.objects.filter(follow_ids__contains=instance.id).count()
 
     pursued_count.short_description = 'Count pursued Man\'s'
-
 
 
 admin.site.register(Man, ManAdmin)
