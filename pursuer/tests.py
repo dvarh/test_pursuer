@@ -57,3 +57,35 @@ class ManFormTest(TestCase):
             'persecuted': ['This field is required.'],
             'pursued': ['This field is required.'],
         })
+
+
+class ManAdminTests(TestCase):
+
+    def setUp(self):
+        self.man1 = Man.objects.create(
+            name='man1',
+            follow_ids='2'
+        )
+        self.man2 = Man.objects.create(
+            name='man2',
+            follow_ids='3'
+        )
+        self.man3 = Man.objects.create(
+            name='man3',
+            follow_ids=''
+        )
+
+        self.site = AdminSite()
+
+    # form/fields/fieldsets interaction ##############################
+
+    def test_default_fields(self):
+        ma = ManAdmin(Man, self.site)
+
+        self.assertEqual(ma.persecuted_count(self.man1), 1)
+        self.assertEqual(ma.persecuted_count(self.man2), 1)
+        self.assertEqual(ma.persecuted_count(self.man3), 0)
+
+        self.assertEqual(ma.pursued_count(self.man1), 0)
+        self.assertEqual(ma.pursued_count(self.man2), 1)
+        self.assertEqual(ma.pursued_count(self.man3), 1)

@@ -18,7 +18,7 @@ class ManAdmin(admin.ModelAdmin):
     def persecuted_count(self, instance):
         if instance.follow_ids == '':
             return 0
-        return str(Man.objects.filter(id__in=instance.follow_ids.split(' ')).count())
+        return Man.objects.filter(id__in=instance.follow_ids.split(' ')).count()
 
     persecuted_count.short_description = 'Count persecuted Man\'s'
 

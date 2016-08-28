@@ -30,6 +30,8 @@ class ManForm(forms.ModelForm):
 
             instance.follow_ids = ' '.join((str(p.id) for p in persecuted))
 
+        instance.save()
+
         if 'pursued' in self.changed_data:
             pursued = self.cleaned_data.get('pursued')
             current_pursued = Man.objects.filter(follow_ids__contains=instance.id)
@@ -51,6 +53,4 @@ class ManForm(forms.ModelForm):
                     a.follow_ids = str(instance.id)
                 a.save()
 
-        if commit:
-            instance.save()
         return instance
